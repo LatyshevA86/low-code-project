@@ -1,0 +1,55 @@
+{
+    "scheme": {
+        "starter": {
+            "id": "starter-1",
+            "type": "DEFAULT",
+            "next": "activity-1"
+        },
+        "activities": [
+            {
+                "id": "activity-1",
+                "type": "AI_AGENT",
+                "config": {
+                    "profile": "HR",
+                    "model": "Codify",
+                    "userPrompt": "Evaluate candidate",
+                    "data": "$starter"
+                },
+                "next": "activity-2"
+            },
+            {
+                "id": "activity-2",
+                "type": "CONDITION",
+                "config": {
+                    "expression": "$activity-1.score >= 0.75"
+                },
+                "nextTrue": "activity-3",
+                "nextFalse": "activity-4"
+            },
+            {
+                "id": "activity-3",
+                "type": "REST_CALL",
+                "config": {
+                    "method": "POST",
+                    "url": "${base-url}/api/v1/datasheets/{datasheetId}/records",
+                    "body": {
+                        "status": "$activity-1.label"
+                    }
+                },
+                "next": null
+            },
+            {
+                "id": "activity-4",
+                "type": "REST_CALL",
+                "config": {
+                    "method": "POST",
+                    "url": "${base-url}/api/v1/notifications",
+                    "body": {
+                        "status": "escalation"
+                    }
+                },
+                "next": null
+            }
+        ]
+    }
+}

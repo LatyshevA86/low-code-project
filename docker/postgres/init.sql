@@ -1,0 +1,4 @@
+CREATE DATABASE "workflow-db";
+
+CREATE USER postgres WITH PASSWORD 'postgres' SUPERUSER;
+GRANT ALL PRIVILEGES ON DATABASE "workflow-db" TO postgres;

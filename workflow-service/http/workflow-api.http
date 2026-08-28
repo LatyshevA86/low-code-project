@@ -1,0 +1,45 @@
+### workflow-service API
+
+@baseUrl = http://localhost:8083
+
+### 1. Create workflow
+POST {{baseUrl}}/api/v1/workflows
+Content-Type: application/json
+
+{
+    "name": "HR screening",
+    "description": "Candidate evaluation workflow"
+}
+
+> {%
+    const body = typeof response.body === "string" ? JSON.parse(response.body) : response.body;
+    client.global.set("workflowId", body.id);
+%}
+
+### 2. Save draft definition (full HR scheme)
+PUT {{baseUrl}}/api/v1/workflows/{{workflowId}}/definitions
+Content-Type: application/json
+
+< ./schemes/hr-scheme.json
+
+> {%
+    const body = typeof response.body === "string" ? JSON.parse(response.body) : response.body;
+    client.global.set("definitionId", body.id);
+%}
+
+### 3. Publish definition
+POST {{baseUrl}}/api/v1/workflows/{{workflowId}}/definitions/{{definitionId}}/publish
+
+### 4. Start workflow
+POST {{baseUrl}}/api/v1/workflows/{{workflowId}}/start
+Content-Type: application/json
+
+{
+    "payload": {
+        "recordId": "rec-001",
+        "data": {
+            "candidateName": "John Doe",
+            "resume": "5 years Java experience"
+        }
+    }
+}
