@@ -16,10 +16,10 @@ dependencies {
 
     runtimeOnly("org.postgresql:postgresql")
 
-    testImplementation(enforcedPlatform("org.testcontainers:testcontainers-bom:$testcontainersBom"))
+    testImplementation(platform("org.testcontainers:testcontainers-bom:$testcontainersBom"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
-    testImplementation("org.testcontainers:testcontainers-postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
     testImplementation("com.github.tomakehurst:wiremock-standalone")
     testImplementation("io.temporal:temporal-testing:$temporalSpringBootStarter")
 }

@@ -15,22 +15,15 @@ allprojects {
 
     val wiremock: String by project
     val springdocOpenapi: String by project
-    val testcontainersBom: String by project
 
     apply(plugin = "io.spring.dependency-management")
     dependencyManagement {
         dependencies {
             imports {
                 mavenBom(BOM_COORDINATES)
-                mavenBom("org.testcontainers:testcontainers-bom:$testcontainersBom")
             }
             dependency("com.github.tomakehurst:wiremock-standalone:$wiremock")
             dependency("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocOpenapi")
-            dependency("org.testcontainers:testcontainers:$testcontainersBom")
-            dependency("org.testcontainers:testcontainers-junit-jupiter:$testcontainersBom")
-            dependency("org.testcontainers:testcontainers-postgresql:$testcontainersBom")
-            dependency("org.testcontainers:testcontainers-jdbc:$testcontainersBom")
-            dependency("org.testcontainers:testcontainers-database-commons:$testcontainersBom")
         }
     }
 }
