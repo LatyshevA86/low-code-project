@@ -14,28 +14,23 @@ import ru.latyshev.workflow.scheme.ConditionEvaluator;
 import ru.latyshev.workflow.scheme.ExecutionContext;
 import ru.latyshev.workflow.scheme.Scheme;
 import ru.latyshev.workflow.scheme.SchemeInterpreterInput;
+import ru.latyshev.workflow.scheme.config.ConditionConfig;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ru.latyshev.workflow.constants.SchemeConstants.CONDITION_FIELD_EXPRESSION;
 import static ru.latyshev.workflow.constants.TemporalConstants.TASK_QUEUE;
 
 @WorkflowImpl(taskQueues = TASK_QUEUE)
 public class SchemeInterpreterWorkflowImpl implements SchemeInterpreterWorkflow {
 
-    private static final ActivityOptions DEFAULT_ACTIVITY_OPTIONS = ActivityOptions.newBuilder()
-        .setTaskQueue(TASK_QUEUE)
-        .setStartToCloseTimeout(Duration.ofMinutes(5))
-        .setRetryOptions(RetryOptions.newBuilder().setMaximumAttempts(3).build())
+    private static final Duration DEFAULT_START_TO_CLOSE_TIMEOUT = Duration.ofMinutes(5);
+    private static final RetryOptions DEFAULT_RETRY_OPTIONS = RetryOptions.newBuilder()
+        .setMaximumAttempts(3)
         .build();
 
-    private final AiAgentActivity aiAgentActivity =
-        Workflow.newActivityStub(AiAgentActivity.class, DEFAULT_ACTIVITY_OPTIONS);
-    private final RestCallActivity restCallActivity =
-        Workflow.newActivityStub(RestCallActivity.class, DEFAULT_ACTIVITY_OPTIONS);
     private final ConditionEvaluator conditionEvaluator = new ConditionEvaluator();
 
     @Override
@@ -57,9 +52,7 @@ public class SchemeInterpreterWorkflowImpl implements SchemeInterpreterWorkflow 
             }
 
             if (node.type() == ActivityType.CONDITION) {
-                String expression = node.config().required(CONDITION_FIELD_EXPRESSION).asText();
-                boolean result = conditionEvaluator.evaluate(expression, context);
-                currentId = result ? node.nextTrue() : node.nextFalse();
+                currentId = evaluateCondition(node, context);
                 continue;
             }
 
@@ -69,11 +62,38 @@ public class SchemeInterpreterWorkflowImpl implements SchemeInterpreterWorkflow 
         }
     }
 
+    private String evaluateCondition(ActivityNode node, ExecutionContext context) {
+        ConditionConfig config = ConditionConfig.fromJson(node.config());
+        boolean result = conditionEvaluator.evaluate(config.expression(), context);
+        return result ? node.nextTrue() : node.nextFalse();
+    }
+
     private JsonNode executeActivity(ActivityNode node) {
+        ActivityOptions options = resolveActivityOptions(node);
         return switch (node.type()) {
-            case AI_AGENT -> aiAgentActivity.execute(node.config());
-            case REST_CALL -> restCallActivity.execute(node.config());
+            case AI_AGENT -> Workflow.newActivityStub(AiAgentActivity.class, options).execute(node.config());
+            case REST_CALL -> Workflow.newActivityStub(RestCallActivity.class, options).execute(node.config());
+            case CONDITION -> throw new IllegalStateException("CONDITION is evaluated inline in workflow");
             default -> throw new IllegalStateException("Unsupported activity type: " + node.type());
         };
+    }
+
+    private ActivityOptions resolveActivityOptions(ActivityNode node) {
+        Duration timeout = node.timeout() != null
+            ? Duration.ofSeconds(node.timeout().startToCloseSeconds())
+            : DEFAULT_START_TO_CLOSE_TIMEOUT;
+
+        RetryOptions retryOptions = node.retry() != null
+            ? RetryOptions.newBuilder()
+                .setMaximumAttempts(node.retry().maxAttempts())
+                .setInitialInterval(Duration.ofSeconds(node.retry().initialIntervalSeconds()))
+                .build()
+            : DEFAULT_RETRY_OPTIONS;
+
+        return ActivityOptions.newBuilder()
+            .setTaskQueue(TASK_QUEUE)
+            .setStartToCloseTimeout(timeout)
+            .setRetryOptions(retryOptions)
+            .build();
     }
 }
