@@ -14,7 +14,7 @@ import ru.latyshev.workflow.utils.JsonUtils;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "app.activities.rest.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "app.activities.rest.enabled", havingValue = "true")
 public class RestCallClientImpl implements RestCallClient {
 
     private final RestClient restClient;

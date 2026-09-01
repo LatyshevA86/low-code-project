@@ -38,7 +38,9 @@ public class SchemeInterpreterWorkflowImpl implements SchemeInterpreterWorkflow 
         Scheme scheme = input.scheme();
         String starterId = input.starterId();
         Map<String, JsonNode> variables = new HashMap<>();
-        ExecutionContext context = ExecutionContext.builder().variables(variables).build();
+        ExecutionContext context = ExecutionContext.builder()
+            .variables(variables)
+            .build();
         variables.put(starterId, input.eventPayload() == null ? NullNode.getInstance() : input.eventPayload());
 
         Map<String, ActivityNode> byId = scheme.activities().stream()

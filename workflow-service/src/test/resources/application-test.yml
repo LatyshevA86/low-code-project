@@ -7,10 +7,11 @@ spring:
     show-sql: false
 
 app:
-  ai:
-    stub: true
-  rest:
-    stub: true
+  activities:
+    ai:
+      enabled: false
+    rest:
+      enabled: false
 
 logging:
   level:

@@ -34,12 +34,12 @@ class SchemeInterpreterWorkflowTest extends AbstractIntegrationTest {
     @BeforeEach
     void setUpTemporal() {
         testEnv = TestWorkflowEnvironment.newInstance(
-                TestEnvironmentOptions.newBuilder()
-                        .setWorkflowClientOptions(
-                                WorkflowClientOptions.newBuilder()
-                                        .build()
-                        )
+            TestEnvironmentOptions.newBuilder()
+                .setWorkflowClientOptions(
+                    WorkflowClientOptions.newBuilder()
                         .build()
+                )
+                .build()
         );
         Worker worker = testEnv.newWorker(TemporalConstants.TASK_QUEUE);
         worker.registerWorkflowImplementationTypes(SchemeInterpreterWorkflowImpl.class);

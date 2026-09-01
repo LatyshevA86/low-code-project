@@ -11,6 +11,7 @@ public class DatabaseHelper {
     private final JdbcClient jdbcClient;
 
     public void truncateTables() {
-        jdbcClient.sql("TRUNCATE TABLE workflow_definitions, workflows RESTART IDENTITY CASCADE").update();
+        jdbcClient.sql("TRUNCATE TABLE workflow_definitions, workflows RESTART IDENTITY CASCADE")
+            .update();
     }
 }
