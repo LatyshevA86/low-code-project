@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.latyshev.workflow.config.properties.ApplicationProperties;
 import ru.latyshev.workflow.constants.TemporalConstants;
 import ru.latyshev.workflow.dto.request.StartWorkflowRequest;
 import ru.latyshev.workflow.dto.response.StartWorkflowResponse;
@@ -33,7 +32,6 @@ public class WorkflowExecutionService {
     private final WorkflowDefinitionRepository workflowDefinitionRepository;
     private final WorkflowRepository workflowRepository;
     private final WorkflowClient workflowClient;
-    private final ApplicationProperties workflowProperties;
     private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
@@ -46,7 +44,7 @@ public class WorkflowExecutionService {
 
         Scheme scheme = definition.getScheme();
         UUID executionId = UUID.randomUUID();
-        String workflowIdTemporal = "scheme-" + executionId;
+        String temporalWorkflowId = "scheme-" + executionId;
 
         JsonNode eventPayload = toEventPayload(request.payload());
 
@@ -62,7 +60,7 @@ public class WorkflowExecutionService {
             SchemeInterpreterWorkflow.class,
             WorkflowOptions.newBuilder()
                 .setTaskQueue(TemporalConstants.TASK_QUEUE)
-                .setWorkflowId(workflowIdTemporal)
+                .setWorkflowId(temporalWorkflowId)
                 .build()
         );
 

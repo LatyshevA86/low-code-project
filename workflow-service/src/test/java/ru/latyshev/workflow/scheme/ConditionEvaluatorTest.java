@@ -21,7 +21,9 @@ class ConditionEvaluatorTest extends AbstractIntegrationTest {
         output.put("score", 0.8);
         Map<String, com.fasterxml.jackson.databind.JsonNode> variables = new HashMap<>();
         variables.put("activity-1", output);
-        context = ExecutionContext.builder().variables(variables).build();
+        context = ExecutionContext.builder()
+            .variables(variables)
+            .build();
     }
 
     @Test

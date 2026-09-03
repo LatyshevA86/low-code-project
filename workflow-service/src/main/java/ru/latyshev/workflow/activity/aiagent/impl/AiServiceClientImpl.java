@@ -12,7 +12,7 @@ import ru.latyshev.workflow.activity.aiagent.dto.response.AiServiceResponse;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "app.activities.ai.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "app.activities.ai.enabled", havingValue = "true")
 public class AiServiceClientImpl implements AiServiceClient {
 
     private final RestClient aiServiceRestClient;

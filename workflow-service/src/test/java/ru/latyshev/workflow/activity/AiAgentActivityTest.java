@@ -7,7 +7,6 @@ import ru.latyshev.workflow.activity.aiagent.impl.AiAgentActivityImpl;
 import ru.latyshev.workflow.integration.AbstractIntegrationTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AiAgentActivityTest extends AbstractIntegrationTest {
 
@@ -27,7 +26,7 @@ class AiAgentActivityTest extends AbstractIntegrationTest {
         var output = activity.execute(config);
 
         assertEquals("stub-response", output.get("text").asText());
-        assertTrue(output.has("label"));
-        assertTrue(output.has("score"));
+        assertEquals("fit", output.get("label").asText());
+        assertEquals(0.9D, output.get("score").asDouble());
     }
 }

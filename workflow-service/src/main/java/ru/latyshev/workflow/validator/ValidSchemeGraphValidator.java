@@ -141,7 +141,7 @@ public class ValidSchemeGraphValidator implements ConstraintValidator<ValidSchem
     private boolean detectCycles(
         String currentId,
         Map<String, ActivityNode> activityById,
-        Set<String> visited,
+        Set<String> onPath,
         int maxSteps,
         ConstraintValidatorContext context
     ) {
@@ -152,23 +152,27 @@ public class ValidSchemeGraphValidator implements ConstraintValidator<ValidSchem
             addViolation(context, SCHEME_FIELD_ACTIVITIES, "Scheme exceeds maximum step limit, possible infinite loop");
             return false;
         }
-        if (visited.contains(currentId)) {
+        if (onPath.contains(currentId)) {
             addViolation(context, SCHEME_FIELD_ACTIVITIES, "Scheme contains a cycle at activity: " + currentId);
             return false;
         }
 
-        visited.add(currentId);
+        onPath.add(currentId);
         ActivityNode activity = activityById.get(currentId);
         if (activity == null) {
+            onPath.remove(currentId);
             return true;
         }
 
+        boolean valid;
         if (activity.type() == ActivityType.CONDITION) {
-            boolean valid = detectCycles(activity.nextTrue(), activityById, visited, maxSteps - 1, context);
-            valid &= detectCycles(activity.nextFalse(), activityById, visited, maxSteps - 1, context);
-            return valid;
+            valid = detectCycles(activity.nextTrue(), activityById, onPath, maxSteps - 1, context);
+            valid &= detectCycles(activity.nextFalse(), activityById, onPath, maxSteps - 1, context);
+        } else {
+            valid = detectCycles(activity.next(), activityById, onPath, maxSteps - 1, context);
         }
 
-        return detectCycles(activity.next(), activityById, visited, maxSteps - 1, context);
+        onPath.remove(currentId);
+        return valid;
     }
 }
