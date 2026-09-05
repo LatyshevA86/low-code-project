@@ -21,7 +21,7 @@
                 "id": "activity-2",
                 "type": "CONDITION",
                 "config": {
-                    "expression": "$activity-1.score >= 0.75"
+                    "expression": "$activity-1.score >= 0.5"
                 },
                 "nextTrue": "activity-3",
                 "nextFalse": "activity-4"

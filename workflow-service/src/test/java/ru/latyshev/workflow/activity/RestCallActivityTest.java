@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.latyshev.workflow.activity.rest.impl.RestCallActivityImpl;
 import ru.latyshev.workflow.integration.AbstractIntegrationTest;
+import ru.latyshev.workflow.scheme.ExecutionContext;
+
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.latyshev.workflow.constants.RestCallStubConstants.FIELD_METHOD;
@@ -23,7 +26,7 @@ class RestCallActivityTest extends AbstractIntegrationTest {
         config.put("method", "PATCH");
         config.put("url", "http://localhost:8080/api/v1/records/rec-1");
 
-        var output = activity.execute(config);
+        var output = activity.execute(config, new ExecutionContext(new HashMap<>()));
 
         assertEquals(STATUS_STUB_SUCCESS, output.get(FIELD_STATUS).asText());
         assertEquals("PATCH", output.get(FIELD_METHOD).asText());

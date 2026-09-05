@@ -58,7 +58,7 @@ public class SchemeInterpreterWorkflowImpl implements SchemeInterpreterWorkflow 
                 continue;
             }
 
-            JsonNode output = executeActivity(node);
+            JsonNode output = executeActivity(node, context);
             variables.put(node.id(), output == null ? NullNode.getInstance() : output);
             currentId = node.next();
         }
@@ -70,11 +70,11 @@ public class SchemeInterpreterWorkflowImpl implements SchemeInterpreterWorkflow 
         return result ? node.nextTrue() : node.nextFalse();
     }
 
-    private JsonNode executeActivity(ActivityNode node) {
+    private JsonNode executeActivity(ActivityNode node, ExecutionContext context) {
         ActivityOptions options = resolveActivityOptions(node);
         return switch (node.type()) {
-            case AI_AGENT -> Workflow.newActivityStub(AiAgentActivity.class, options).execute(node.config());
-            case REST_CALL -> Workflow.newActivityStub(RestCallActivity.class, options).execute(node.config());
+            case AI_AGENT -> Workflow.newActivityStub(AiAgentActivity.class, options).execute(node.config(), context);
+            case REST_CALL -> Workflow.newActivityStub(RestCallActivity.class, options).execute(node.config(), context);
             case CONDITION -> throw new IllegalStateException("CONDITION is evaluated inline in workflow");
             default -> throw new IllegalStateException("Unsupported activity type: " + node.type());
         };

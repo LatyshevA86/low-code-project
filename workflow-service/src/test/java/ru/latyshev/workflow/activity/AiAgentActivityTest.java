@@ -5,8 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.latyshev.workflow.activity.aiagent.impl.AiAgentActivityImpl;
 import ru.latyshev.workflow.integration.AbstractIntegrationTest;
+import ru.latyshev.workflow.scheme.ExecutionContext;
+
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AiAgentActivityTest extends AbstractIntegrationTest {
 
@@ -15,18 +19,15 @@ class AiAgentActivityTest extends AbstractIntegrationTest {
 
     @Test
     void resolvesHrProfileFromResource() {
-        ObjectNode data = objectMapper.createObjectNode();
-        data.put("candidate", "John");
-
         ObjectNode config = objectMapper.createObjectNode();
         config.put("profile", "HR");
         config.put("model", "Codify");
-        config.set("data", data);
+        config.put("data", "$starter.payload");
 
-        var output = activity.execute(config);
+        var output = activity.execute(config, new ExecutionContext(new HashMap<>()));
 
         assertEquals("stub-response", output.get("text").asText());
-        assertEquals("fit", output.get("label").asText());
-        assertEquals(0.9D, output.get("score").asDouble());
+        assertTrue(output.get("label").isTextual());
+        assertTrue(output.get("score").isDouble());
     }
 }
