@@ -24,7 +24,7 @@ public final class HrSchemeFixtures {
         AiAgentConfig.AiAgentConfigBuilder aiConfigBuilder = AiAgentConfig.builder()
             .profile(AgentProfile.HR)
             .model("Codify")
-            .data(OBJECT_MAPPER.getNodeFactory().textNode("$starter"));
+            .data("$starter.payload");
         if (userPrompt != null) {
             aiConfigBuilder.userPrompt(userPrompt);
         }

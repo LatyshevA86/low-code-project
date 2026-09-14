@@ -1,7 +1,6 @@
 package ru.latyshev.workflow.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
@@ -20,8 +19,8 @@ import ru.latyshev.workflow.repository.WorkflowDefinitionRepository;
 import ru.latyshev.workflow.repository.WorkflowRepository;
 import ru.latyshev.workflow.scheme.Scheme;
 import ru.latyshev.workflow.scheme.SchemeInterpreterInput;
+import ru.latyshev.workflow.utils.JsonUtils;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -32,7 +31,7 @@ public class WorkflowExecutionService {
     private final WorkflowDefinitionRepository workflowDefinitionRepository;
     private final WorkflowRepository workflowRepository;
     private final WorkflowClient workflowClient;
-    private final ObjectMapper objectMapper;
+    private final JsonUtils jsonUtils;
 
     @Transactional(readOnly = true)
     public StartWorkflowResponse startWorkflow(UUID workflowId, StartWorkflowRequest request) {
@@ -74,10 +73,10 @@ public class WorkflowExecutionService {
             .build();
     }
 
-    private JsonNode toEventPayload(Map<String, JsonNode> payload) {
+    private JsonNode toEventPayload(JsonNode payload) {
         if (payload == null || payload.isEmpty()) {
             return NullNode.getInstance();
         }
-        return objectMapper.valueToTree(payload);
+        return jsonUtils.valueToTree(payload);
     }
 }

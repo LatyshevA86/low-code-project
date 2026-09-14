@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.latyshev.workflow.activity.rest.RestCallActivity;
 import ru.latyshev.workflow.constants.TemporalConstants;
 import ru.latyshev.workflow.activity.rest.RestCallClient;
+import ru.latyshev.workflow.scheme.ExecutionContext;
 import ru.latyshev.workflow.scheme.config.RestCallConfig;
 import ru.latyshev.workflow.utils.JsonUtils;
 
@@ -21,7 +22,7 @@ public class RestCallActivityImpl implements RestCallActivity {
     private final JsonUtils jsonUtils;
 
     @Override
-    public JsonNode execute(JsonNode config) {
+    public JsonNode execute(JsonNode config, ExecutionContext context) {
         RestCallConfig restCallConfig = jsonUtils.parse(config, RestCallConfig.class);
         log.info("Executing REST_CALL activity for {}", restCallConfig.url());
         return restCallClient.invoke(restCallConfig);

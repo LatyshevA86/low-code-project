@@ -2,6 +2,7 @@ package ru.latyshev.workflow.activity.aiagent;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AgentProfileResolver {
@@ -38,6 +40,7 @@ public class AgentProfileResolver {
                 throw new IllegalStateException("Prompt resource is required for profile: " + profile);
             }
             prompts.put(profile, loadPromptResource(properties.promptResource(), profile));
+            log.info("Loaded prompt resource for profile: {}", profile);
         });
     }
 

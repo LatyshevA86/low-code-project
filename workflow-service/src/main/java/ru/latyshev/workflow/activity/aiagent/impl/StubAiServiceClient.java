@@ -8,23 +8,26 @@ import ru.latyshev.workflow.activity.aiagent.AiServiceClient;
 import ru.latyshev.workflow.activity.aiagent.dto.request.AiServiceRequest;
 import ru.latyshev.workflow.activity.aiagent.dto.response.AiServiceResponse;
 
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 @Slf4j
 @Component
 @ConditionalOnProperty(name = "app.activities.ai.enabled", havingValue = "false", matchIfMissing = true)
 public class StubAiServiceClient implements AiServiceClient {
 
-    private static final String STUB_LABEL = "fit";
-    private static final double STUB_SCORE = 0.9D;
-    private static final String STUB_TEXT = "stub-response";
+    private static final List<String> LABELS = List.of("fit", "not_fit");
 
     @Override
     public AiServiceResponse invoke(AiServiceRequest request) {
-        log.info("StubAiServiceClient invoke request={} label={} score={}", request, STUB_LABEL, STUB_SCORE);
+        String label = LABELS.get(ThreadLocalRandom.current().nextInt(LABELS.size()));
+        double score = ThreadLocalRandom.current().nextDouble();
+        log.info("StubAiServiceClient invoke request={} label={} score={}", request, label, score);
 
         return AiServiceResponse.builder()
-            .label(STUB_LABEL)
-            .score(STUB_SCORE)
-            .text(STUB_TEXT)
+            .label(label)
+            .score(score)
+            .text("stub-response")
             .entities(JsonNodeFactory.instance.objectNode())
             .build();
     }
